@@ -1,4 +1,4 @@
 cmake_minimum_required(VERSION 3.1)
 
-add_library(http_parser request.hpp parse_request.hpp parse_request.cpp)
+add_library(http_parser parse_request.cpp)
 set_target_properties(http_parser PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
