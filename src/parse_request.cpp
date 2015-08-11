@@ -18,6 +18,37 @@ struct wrapper
 	request& req;
 };
 
+bool is_tchar(int c)
+{
+	switch(c)
+	{
+	case '!': case '#': case '$': case '%': case '&': case '\'': case '*':
+	case '+': case '-': case '.': case '^': case '_': case '`': case '|': case '~':
+		return true;
+	default:
+		break;
+	}
+	return std::isalnum(c);
+}
+
+parse_status parse_token(std::istream& src, std::string& token)
+{
+	int ch;
+
+	token.clear();
+
+	while(is_tchar(ch = src.get()))
+	{
+		token.push_back(ch);
+	}
+	if(ch != EOF)
+	{
+		src.putback(ch);
+	}
+
+	return token.empty() ? PARSE_FAILURE : PARSE_SUCCESS;
+}
+
 parse_status parse_request_target_origin_form(std::istream& src, request_target_origin_form& of)
 {
 	int ch;
@@ -116,15 +147,17 @@ parse_status parse_request_line(wrapper& w)
 	std::string tempstr;
 	
 	// First parse the method
-	while((ch = w.src.get()) != ' ')
-	{		
-		if(ch == EOF)
-		{
-			return PARSE_FAILURE;
-		}
-		tempstr.push_back(ch);
+	parse_status result = parse_token(w.src, tempstr);
+	if(result != PARSE_SUCCESS)
+	{
+		return result;
 	}
-	// Space is consumed
+
+	// Consume space
+	if((ch = w.src.get()) != ' ')
+	{
+		return PARSE_FAILURE;
+	}
 
 	if(tempstr == "GET")
 		w.req.method = request_method::GET;
@@ -146,7 +179,7 @@ parse_status parse_request_line(wrapper& w)
 		return PARSE_FAILURE;
 
 	// Next parse the target
-	parse_status result = parse_request_target(w);
+	result = parse_request_target(w);
 	if(result != PARSE_SUCCESS)
 	{
 		return result;
@@ -188,37 +221,6 @@ void consume_ows(std::istream& src)
 	{
 		src.putback(ch);
 	}
-}
-
-bool is_tchar(int c)
-{
-	switch(c)
-	{
-	case '!': case '#': case '$': case '%': case '&': case '\'': case '*':
-	case '+': case '-': case '.': case '^': case '_': case '`': case '|': case '~':
-		return true;
-	default:
-		break;
-	}
-	return std::isalnum(c);
-}
-
-parse_status parse_token(std::istream& src, std::string& token)
-{
-	int ch;
-
-	token.clear();
-
-	while(is_tchar(ch = src.get()))
-	{
-		token.push_back(ch);
-	}
-	if(ch != EOF)
-	{
-		src.putback(ch);
-	}
-
-	return token.empty() ? PARSE_FAILURE : PARSE_SUCCESS;
 }
 
 parse_status parse_header_field_value(std::istream& src, std::string& value)
