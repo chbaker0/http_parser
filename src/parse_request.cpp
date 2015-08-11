@@ -18,6 +18,58 @@ struct wrapper
 	request& req;
 };
 
+int hex_to_int(int ch)
+{
+	if(ch >= '0' && ch <= '9')
+		return ch - '0';
+	else if(ch >= 'A' && ch <= 'F')
+		return ch - 'A' + 10;
+	else if(ch >= 'a' && ch <= 'f')
+		return ch - 'a' + 10;
+	else
+		return -1;
+}
+
+int parse_pchar(std::istream& src)
+{
+	int ch = src.get();
+
+	if(std::isalpha(ch) || std::isdigit(ch))
+	{
+	        return ch;
+	}
+
+	switch(ch)
+	{
+	case '-': case '.': case '_': case '~': case ':': case '@':
+	case '!': case '$': case '&': case '\'': case '(': case ')':
+	case '*': case '+': case ',': case ';': case '=':
+		return ch;
+	default:
+		break;
+	}
+
+	if(ch != '%')
+	{
+		return -1;
+	}
+
+	ch = 0;
+
+	int temp = hex_to_int(src.get());
+	if(temp < 0)
+	{
+		return -1;
+	}
+	ch += temp * 16;
+	temp = hex_to_int(src.get());
+	if(temp < 0)
+	{
+		return -1;
+	}
+	return ch + temp;
+}
+
 bool is_tchar(int c)
 {
 	switch(c)
@@ -52,29 +104,57 @@ parse_status parse_token(std::istream& src, std::string& token)
 parse_status parse_request_target_origin_form(std::istream& src, request_target_origin_form& of)
 {
 	int ch;
-	std::string tempstr;
 
 	ch = src.get();
-	while(ch != ' ' && ch != '?')
+	if(ch != '/')
 	{
-		if(ch == EOF)
+		return PARSE_FAILURE;
+	}
+	while(true)
+	{
+		of.absolute_path.push_back(ch);
+		ch = src.get();
+		if(ch == '?')
+		{
+			break;
+		}
+		else if(ch == ' ')
+		{
+			return PARSE_SUCCESS;
+		}
+		else if(ch == EOF)
 		{
 			return PARSE_FAILURE;
 		}
-		of.absolute_path.push_back(ch);
-		ch = src.get();
-	}
-	if(ch == '?')
-	{
-		while((ch = src.get()) != ' ')
+		else if(ch != '/')
 		{
-			if(ch == EOF)
+			src.putback(ch);
+			ch = parse_pchar(src);
+			if(ch < 0)
 			{
 				return PARSE_FAILURE;
 			}
-			tempstr.push_back(ch);
 		}
-		of.query = std::move(tempstr);
+	}
+
+	of.query = std::string{};
+
+	while(true)
+	{
+		ch = src.get();
+		if(ch == '/' || ch == '?')
+		{
+			of.query->push_back(ch);
+		}
+		else
+		{
+			ch = parse_pchar(src);
+			if(ch < 0)
+			{
+				return PARSE_FAILURE;
+			}
+			of.query->push_back(ch);
+		}
 	}
 
 	return PARSE_SUCCESS;
