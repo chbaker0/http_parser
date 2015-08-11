@@ -86,19 +86,16 @@ parse_status parse_request_target(wrapper& w)
 		// Consume // as in http://www.example.com/
 		while((ch = w.src.get()) == '/')
 			;
-		
-		if(ch == EOF || ch == ' ')
-		{
-			return PARSE_FAILURE;
-		}
 
-		while((ch = w.src.get()) != '/')
+		while(ch != '/')
 		{
 			if(ch == EOF || ch == ' ')
 			{
 				return PARSE_FAILURE;
 			}
+			
 			af.host.push_back(ch);
+			ch = w.src.get();
 		}
 		w.src.putback(ch);
 
@@ -212,11 +209,9 @@ parse_status parse_token(std::istream& src, std::string& token)
 
 	token.clear();
 
-	ch = src.get();
-	while(ch != EOF && is_tchar(ch))
+	while(is_tchar(ch = src.get()))
 	{
 		token.push_back(ch);
-		ch = src.get();
 	}
 	if(ch != EOF)
 	{
