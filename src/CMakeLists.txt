@@ -2,3 +2,10 @@ cmake_minimum_required(VERSION 3.1)
 
 add_library(http_parser parse_request.cpp)
 set_target_properties(http_parser PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED ON)
+
+install(TARGETS http_parser
+		INCLUDES DESTINATION ${INCLUDE_INSTALL_DIR}
+		LIBRARY  DESTINATION ${LIB_INSTALL_DIR}
+		ARCHIVE  DESTINATION ${LIB_INSTALL_DIR}
+		RUNTIME	 DESTINATION ${BIN_INSTALL_DIR}
+)
