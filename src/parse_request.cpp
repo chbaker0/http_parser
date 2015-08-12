@@ -1,3 +1,9 @@
+/* Copyright (c) 2015 Collin Baker
+ *
+ * This file is licensed under the MIT license
+ * http://opensource.org/licenses/MIT
+ */
+
 #include "http/parse_request.hpp"
 
 #include <new>

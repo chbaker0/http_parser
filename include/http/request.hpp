@@ -1,3 +1,9 @@
+/* Copyright (c) 2015 Collin Baker
+ *
+ * This file is licensed under the MIT license
+ * http://opensource.org/licenses/MIT
+ */
+
 #ifndef _HTTP_REQUEST_HPP_
 #define _HTTP_REQUEST_HPP_
 
