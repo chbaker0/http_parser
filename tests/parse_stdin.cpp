@@ -59,7 +59,7 @@ int main()
 		}
 		void operator()(const request_target_absolute_form& af) const
 		{
-			cout << "scheme " << af.scheme << ", host " << af.host << ", path ";
+			cout << "scheme " << af.scheme << ", host " << af.authority << ", path ";
 			(*this)(af.origin_part);
 		}
 		void operator()(const request_target_authority_form& af) const

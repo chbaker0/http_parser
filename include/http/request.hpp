@@ -31,7 +31,7 @@ struct request_target_origin_form
 struct request_target_absolute_form
 {
 	std::string scheme;
-	std::string host;
+	std::string authority;
 	request_target_origin_form origin_part;
 };
 

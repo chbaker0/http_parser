@@ -190,28 +190,41 @@ parse_status parse_request_target(wrapper& w)
 	else
 	{
 		request_target_absolute_form af;
+
+		// Parse the scheme
 		while(ch != ':')
 		{
-			if(ch == EOF || ch == ' ')
+			ch = std::tolower(ch);
+			if(!(std::isalpha(ch) || std::isdigit(ch) || ch == '+' || ch == '-' || ch == '.'))
 			{
 				return PARSE_FAILURE;
 			}
 			af.scheme.push_back(ch);
 			ch = w.src.get();
 		}
-		// Consume // as in http://www.example.com/
-		while((ch = w.src.get()) == '/')
-			;
-
-		while(ch != '/')
+		// An empty scheme is incorrect
+		if(af.scheme.empty())
 		{
-			if(ch == EOF || ch == ' ')
+			return PARSE_FAILURE;
+		}
+		
+		// Consume double-slash before authority
+		// since an absolute URI for http this usage
+		// must have an authority
+		if(w.src.get() != '/' || w.src.get() != '/')
+		{
+			return PARSE_FAILURE;
+		}
+
+		// Parse authority
+		// TODO: make this follow RFC 3986 definition of 'authority'
+		while((ch = w.src.get()) != '/')
+		{
+			if(!std::isgraph(ch))
 			{
 				return PARSE_FAILURE;
 			}
-			
-			af.host.push_back(ch);
-			ch = w.src.get();
+			af.authority.push_back(ch);
 		}
 		w.src.putback(ch);
 
