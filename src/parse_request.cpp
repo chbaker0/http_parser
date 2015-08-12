@@ -146,8 +146,13 @@ parse_status parse_request_target_origin_form(std::istream& src, request_target_
 		{
 			of.query->push_back(ch);
 		}
+		else if(ch == ' ')
+		{
+			break;
+		}
 		else
 		{
+			src.putback(ch);
 			ch = parse_pchar(src);
 			if(ch < 0)
 			{
