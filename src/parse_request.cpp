@@ -341,6 +341,12 @@ parse_status parse_header_field_value(std::istream& src, std::string& value)
 		}
 	}
 
+	// Cut whitespace off end of string
+	std::size_t ows_count = 0;
+	for(auto it = value.rbegin(); it != value.rend() && is_ows(*it); ++it, ++ows_count)
+		;
+	value.resize(value.size() - ows_count);
+
 	if(ch != EOF)
 	{
 		src.putback(ch);
