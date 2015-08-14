@@ -74,4 +74,9 @@ int main()
 
 	boost::apply_visitor(print_target_visitor(), req.target);
 	cout << "\n";
+
+	for(auto& entry : req.header_fields)
+	{
+		cout << entry.first << ": " << entry.second << endl;
+	}
 }
