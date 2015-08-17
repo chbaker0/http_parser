@@ -1,4 +1,5 @@
 @PACKAGE_INIT@
 
 set_and_check(http-parser_LIBRARY_DIR "@PACKAGE_LIB_INSTALL_DIR@")
+set_and_check(http-parser_LIBRARY "${http-parser_LIBRARY_DIR}/libhttp_parser.a")
 set_and_check(http-parser_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
