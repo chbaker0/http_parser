@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <boost/variant/static_visitor.hpp>
+
 #include "http/parse_request.hpp"
 
 using namespace std;

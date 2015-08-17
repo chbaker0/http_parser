@@ -10,8 +10,8 @@
 #include <map>
 #include <string>
 
-#include <boost/variant.hpp>
-#include <boost/optional.hpp>
+#include <boost/variant/variant.hpp>
+#include <boost/optional/optional.hpp>
 
 namespace http
 {
